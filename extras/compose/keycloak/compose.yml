@@ -1,0 +1,32 @@
+# Keycloak im Dev-Modus (HTTP, eingebettete H2-Datenbank).
+#
+# Aufruf:
+#   docker compose -f extras/compose/keycloak/compose.yml up -d
+#   docker compose -f extras/compose/keycloak/compose.yml down
+#
+# Admin-UI: http://localhost:8880
+#   Benutzer: admin  |  Passwort: admin
+#
+# Token holen (Beispiel):
+#   POST http://localhost:8880/realms/kiosk/protocol/openid-connect/token
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2.5
+    command: ["start-dev"]
+    ports:
+      - "8880:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: INFO
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    container_name: kiosk-keycloak
+    restart: unless-stopped

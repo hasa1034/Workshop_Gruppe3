@@ -3,6 +3,8 @@
 Diese Notiz beschreibt das Entity-Muster fuer die Go-Implementierung mit
 `Kiosk`, `Betreiber` und `Produkt`.
 
+Die erste Codebasis liegt unter `internal/model`.
+
 ## Domänenmodell
 
 - Ein `Kiosk` besitzt Stammdaten wie Name, E-Mail, Status, Homepage,

@@ -4,6 +4,7 @@
 
 - Entity-Modell fuer `Kiosk`, `Betreiber` und `Produkt` pflegen.
 - Go-Structs und GORM-Mapping fuer die Beziehungen definieren.
+- Codebasis fuer Entitys unter `internal/model` anlegen und aktuell halten.
 - Informationsdokumentation und README aktuell halten.
 - Darauf achten, dass `Kiosk` genau einen `Betreiber` und mehrere `Produkte`
   referenziert.

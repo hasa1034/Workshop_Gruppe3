@@ -43,6 +43,7 @@ Neuanlegen und GET zum Lesen.
 
 ## Aufgabenverteilung
 Sam Haghighi: Entity-Modell, Go-Structs, GORM-Mapping und Dokumentation.
+Sams Entity-Codebasis wurde mit `go.mod` und `internal/model` begonnen.
 Ali Arslan: REST-Router, Handler, Request-/Response-DTOs und Validierung beim
 Neuanlegen.
 Efe Yueksel: PostgreSQL-Anbindung, Repository-/Service-Logik,

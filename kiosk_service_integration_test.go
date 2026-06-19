@@ -1,4 +1,4 @@
-package service_test
+package main_test
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/hasa1034/Workshop_Gruppe3/internal/config"
 	"github.com/hasa1034/Workshop_Gruppe3/internal/model"
 	"github.com/hasa1034/Workshop_Gruppe3/internal/repository"
 	"github.com/hasa1034/Workshop_Gruppe3/internal/service"
@@ -14,14 +15,14 @@ import (
 )
 
 // setupDB stellt eine Verbindung zur Test-Datenbank her und migriert das Schema.
-// Ist DATABASE_URL nicht gesetzt, wird der Test uebersprungen, damit `go test`
-// ohne lokale Datenbank gruen bleibt. In der CI wird DATABASE_URL gesetzt.
+// Ist DATABASE_URL nicht gesetzt, nutzt der Test die Standardwerte aus der
+// Anwendungskonfiguration. PostgreSQL muss dafuer lokal per Compose laufen.
 func setupDB(t *testing.T) *gorm.DB {
 	t.Helper()
 
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		t.Skip("DATABASE_URL nicht gesetzt; Integrationstest wird uebersprungen")
+		dsn = config.Load().DatabaseURL
 	}
 
 	db, err := repository.Connect(dsn)

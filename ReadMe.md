@@ -22,12 +22,13 @@ HTTP-Server aber nicht verpflichtend für die Endpunkte erzwungen.
 ## KI-Werkzeuge
 
 OpenAI Codex wurde lokal im Repository verwendet. Claude wurde ergänzend von
-Ali Arslan für seinen Verantwortungsbereich eingesetzt.
+Ali Arslan und Efe Yueksel für seinen Verantwortungsbereich eingesetzt.
 
 ### Agenten
 
 OpenAI Codex (Sam Haghighi)
 Claude (Ali Arslan)
+Claude (Efe Yueksel)
 
 ### Chat-URLs
 

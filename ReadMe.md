@@ -42,10 +42,10 @@ Testdatenbank bzw. einem Testcontainer. Geprueft werden mindestens POST zum
 Neuanlegen und GET zum Lesen.
 
 ## Aufgabenverteilung
-Person 1: Entity-Modell, Go-Structs, GORM-Mapping und Dokumentation.
-Person 2: REST-Router, Handler, Request-/Response-DTOs und Validierung beim
+Sam Haghighi: Entity-Modell, Go-Structs, GORM-Mapping und Dokumentation.
+Ali Arslan: REST-Router, Handler, Request-/Response-DTOs und Validierung beim
 Neuanlegen.
-Person 3: PostgreSQL-Anbindung, Repository-/Service-Logik,
+Efe Yueksel: PostgreSQL-Anbindung, Repository-/Service-Logik,
 Integrationstests und CI-Checks.
 
 ## Prompts/Requests an KI-Agent/en

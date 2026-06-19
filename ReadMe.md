@@ -21,11 +21,13 @@ HTTP-Server aber nicht verpflichtend für die Endpunkte erzwungen.
 
 ## KI-Werkzeuge
 
-OpenAI Codex wurde lokal im Repository verwendet.
+OpenAI Codex wurde lokal im Repository verwendet. Claude wurde ergänzend von
+Ali Arslan für seinen Verantwortungsbereich eingesetzt.
 
 ### Agenten
 
 OpenAI Codex (Sam Haghighi)
+Claude (Ali Arslan)
 
 ### Chat-URLs
 
@@ -239,6 +241,8 @@ Ali Arslan:
 - Request-/Response-Verarbeitung
 - Validierung beim Neuanlegen
 - HTTP-Statuscodes und Fehlerantworten
+- Keycloak-/Bruno-Vorbereitung in seinem Verantwortungsbereich
+- Ergänzende KI-Unterstützung mit Claude
 
 Efe Yueksel:
 
@@ -259,3 +263,6 @@ Efe Yueksel:
   miteinander abgleichen.
 - README für die Abgabe fertigstellen und mit dem tatsächlichen Code-Stand
   synchronisieren.
+- Ali-bezogene Prompts zu PostgreSQL, Keycloak, Bruno, JWT-Middleware und
+  Integrationstests sind zusätzlich in
+  `Informationen/Prompts-Kiosk-Go-Workshop.md` dokumentiert.

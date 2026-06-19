@@ -22,6 +22,9 @@ Abgabezusammenfassung steht in der Root-README `ReadMe.md`.
 - Fehlerfälle in passende HTTP-Statuscodes übersetzt.
 - Handler an Service-Signaturen mit `context.Context` und
   `repository.KioskFilter` angepasst.
+- Keycloak- und Bruno-Vorbereitung dokumentiert.
+- JWT-Middleware wieder aus dem Router entfernt bzw. nicht weiter benötigt.
+- Claude ergänzend für seinen Verantwortungsbereich verwendet.
 
 ## Efe Yueksel
 
@@ -38,5 +41,7 @@ Abgabezusammenfassung steht in der Root-README `ReadMe.md`.
 - `go.mod` mit den benötigten Bibliotheken gepflegt.
 - PostgreSQL- und Keycloak-Compose-Dateien unter `extras/compose` abgelegt.
 - Bruno-Collection für manuelle REST-Tests unter `extras/bruno/Kiosk-Go`
+  ergänzt.
+- Prompt-Dokumentation unter `Informationen/Prompts-Kiosk-Go-Workshop.md`
   ergänzt.
 - Root-README mit dem tatsächlichen Code-Stand synchronisiert.

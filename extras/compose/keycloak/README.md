@@ -1,4 +1,4 @@
-# Keycloak – Einrichtung für Kiosk-Go
+# Keycloak - Einrichtung für Kiosk-Go
 
 Keycloak läuft im Dev-Modus mit eingebetteter H2-Datenbank.  
 **Wichtig:** Alle Konfigurationen gehen verloren, sobald der Container mit `docker compose down` gestoppt wird. Verwende `docker compose stop` um die Daten zu erhalten.
@@ -81,4 +81,7 @@ Antwort enthält `access_token` (Bearer JWT, gültig 300 Sekunden).
 http://localhost:8880/realms/kiosk/protocol/openid-connect/certs
 ```
 
-Wird vom JWT-Middleware (`internal/middleware/auth.go`) zur Token-Validierung genutzt.
+Der Endpunkt ist dokumentiert, falls später wieder eine JWT-Prüfung eingebunden
+werden soll. In der aktuellen Abgabe sind die REST-Routen ungeschützt; eine
+JWT-Middleware ist nicht aktiv und `internal/middleware/auth.go` ist nicht im
+Repository enthalten.

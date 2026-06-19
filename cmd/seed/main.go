@@ -23,7 +23,7 @@ const banner = `
 `
 
 func main() {
-	fmt.Println(banner)
+	fmt.Print(banner)
 
 	cfg := config.Load()
 

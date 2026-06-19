@@ -10,3 +10,10 @@
 
 Ausgefüllte Datei ReadMe.md aus dem ILIAS-Ordner "Programmierworkshop"
 per EMail an den Dozenten
+
+## Erfüllungsstand im Repository
+
+- Die abgabefertige Datei ist `ReadMe.md` im Projektwurzelverzeichnis.
+- Die ergänzende Projektdokumentation liegt unter `Informationen/`.
+- PostgreSQL, optionale Keycloak-Umgebung und Bruno-Requests liegen unter
+  `extras/`.

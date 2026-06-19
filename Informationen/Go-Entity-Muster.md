@@ -1,9 +1,9 @@
-# Go-Entity-Muster fuer Kiosk
+# Go-Entity-Muster für Kiosk
 
-Diese Notiz beschreibt das Entity-Muster fuer die Go-Implementierung mit
+Diese Notiz beschreibt das umgesetzte Entity-Muster der Go-Implementierung mit
 `Kiosk`, `Betreiber` und `Produkt`.
 
-Die erste Codebasis liegt unter `internal/model`.
+Die Codebasis liegt unter `internal/model`.
 
 ## Domänenmodell
 
@@ -13,9 +13,9 @@ Die erste Codebasis liegt unter `internal/model`.
 - Ein `Kiosk` hat mehrere `Produkte`.
 - Die fachliche Richtung geht vom `Kiosk` zum `Betreiber` und vom `Kiosk` zu
   den `Produkten`.
-- `Betreiber` und `Produkt` haben kein `Kiosk`-Objekt als Rueckrichtung.
+- `Betreiber` und `Produkt` haben kein `Kiosk`-Objekt als Rückrichtung.
 - `Produkt` nutzt nur `KioskID` als technische Datenbankzuordnung.
-- Wird ein `Kiosk` geloescht, werden zugehoerige `Produkte` per Cascade
+- Wird ein `Kiosk` gelöscht, werden zugehörige `Produkte` per Cascade
   ebenfalls entfernt.
 
 ## Go-Structs mit GORM
@@ -82,8 +82,8 @@ func (Produkt) TableName() string {
 
 ## DTO und Validierung beim Neuanlegen
 
-Validierung wird nur beim Neuanlegen benoetigt. Dafuer bietet sich ein eigenes
-Request-DTO an, damit Datenbankmodell und REST-Eingabe getrennt bleiben.
+Validierung wird nur beim Neuanlegen ausgeführt. Dafür nutzt die Anwendung ein
+eigenes Request-DTO, damit Datenbankmodell und REST-Eingabe getrennt bleiben.
 
 ```go
 type BetreiberCreateRequest struct {
@@ -109,11 +109,11 @@ type KioskCreateRequest struct {
 }
 ```
 
-Empfohlene Bibliothek: `github.com/go-playground/validator/v10`.
+Umgesetzte Bibliothek: `github.com/go-playground/validator/v10`.
 
 ## REST-Schnittstelle
 
-Empfohlene schlanke Variante: `net/http` mit `github.com/go-chi/chi/v5`.
+Umgesetzt ist `net/http` mit `github.com/go-chi/chi/v5`.
 
 - `GET /kioske/{id}` liest einen Kiosk mit genau einem `Betreiber` und
   mehreren `Produkten`.
@@ -122,30 +122,32 @@ Empfohlene schlanke Variante: `net/http` mit `github.com/go-chi/chi/v5`.
 - `POST /kioske` legt einen neuen Kiosk inklusive genau einem Betreiber und
   optionalen Produkten an.
 - Beim erfolgreichen `POST` wird `201 Created` mit `Location: /kioske/{id}`
-  zurueckgegeben.
+  zurückgegeben.
 
 ## Repository- und Service-Verhalten
 
 - Lesen erfolgt ohne explizite Transaktion.
 - Neuanlegen erfolgt in einer Transaktion, damit `Kiosk`, `Betreiber` und
   `Produkte` gemeinsam gespeichert werden.
-- Vor dem Neuanlegen wird geprueft, ob die E-Mail bereits existiert.
+- Vor dem Neuanlegen wird geprüft, ob die E-Mail bereits existiert.
 - Fehler werden als passende HTTP-Statuscodes abgebildet:
-  - `400 Bad Request` fuer ungueltiges JSON oder Validierungsfehler
-  - `404 Not Found` fuer nicht vorhandene IDs
-  - `409 Conflict` fuer bereits vorhandene E-Mail
-  - `201 Created` fuer erfolgreiches Neuanlegen
+  - `400 Bad Request` für ungültiges JSON oder Validierungsfehler
+  - `404 Not Found` für nicht vorhandene IDs
+  - `409 Conflict` für bereits vorhandene E-Mail
+  - `201 Created` für erfolgreiches Neuanlegen
 
-## Einfacher Integrationstest
+## Integrationstest
 
-Ein minimaler Integrationstest sollte pruefen:
+Der vorhandene Integrationstest `kiosk_service_integration_test.go` prüft
+Service und Repository gegen eine echte PostgreSQL-Datenbank:
 
-- `POST /kioske` mit gueltigem Body liefert `201 Created` und `Location`.
-- `GET /kioske/{id}` liefert den neu angelegten Kiosk.
-- `POST /kioske` mit ungueltiger E-Mail liefert `400 Bad Request`.
+- Kiosk inklusive Betreiber und Produkten anlegen.
+- Neu angelegten Kiosk per ID lesen.
+- Doppelte E-Mail-Adressen als `service.ErrEmailExists` erkennen.
+- Nicht vorhandene IDs als `service.ErrNotFound` erkennen.
+- Liste aller Kioske und Filter nach E-Mail prüfen.
 
 Geeignete Go-Werkzeuge:
 
 - `testing`
-- `net/http/httptest`
-- Testdatenbank oder Testcontainer fuer PostgreSQL
+- PostgreSQL-Testdatenbank, z.B. über `extras/compose/postgres/compose.yml`

@@ -1,26 +1,31 @@
-# Struktur und Idee fuer die Go-Implementierung
+# Struktur und Idee für die Go-Implementierung
 
-Diese Dokumentation beschreibt die fachliche Struktur des Kiosk-Beispiels fuer
-eine prototypische Implementierung mit Go.
+Diese Dokumentation beschreibt die fachliche Struktur des Kiosk-Beispiels für
+die prototypische Implementierung mit Go.
 
 ## Zielbild
 
 Die Anwendung verwaltet Kioske. Zu jedem Kiosk wird genau ein Betreiber und
-eine Liste von Produkten gespeichert. Die erste Ausbaustufe konzentriert sich auf Lesen und
-Neuanlegen ueber REST, Validierung beim Neuanlegen und Speicherung in
-PostgreSQL.
+eine Liste von Produkten gespeichert. Die umgesetzte Ausbaustufe konzentriert
+sich auf Lesen und Neuanlegen über REST, Validierung beim Neuanlegen und
+Speicherung in PostgreSQL.
 
 ## Schichtenstruktur
 
-- `cmd/server`: Startpunkt der Anwendung, Laden der Konfiguration und Start des
-  HTTP-Servers.
-- `internal/model`: Go-Structs fuer `Kiosk`, `Betreiber`, `Produkt` und
+- `main.go`: Startpunkt für `go run .`.
+- `cmd/server`: alternativer Startpunkt der Anwendung.
+- `cmd/seed`: Seed-Kommando für Beispieldaten.
+- `internal/model`: Go-Structs für `Kiosk`, `Betreiber`, `Produkt` und
   `Geschlecht`.
 - `internal/repository`: Datenbankzugriff mit GORM.
-- `internal/service`: Fachlogik, Transaktionen, Dublettenpruefung und
+- `internal/service`: Fachlogik, Transaktionen, Dublettenprüfung und
   Fehlerabbildung.
-- `internal/http`: Router, Handler, Request-/Response-DTOs und Statuscodes.
-- `internal/validation`: zentrale Validierung fuer Create-Requests.
+- `internal/http`: Router.
+- `internal/handler`: Handler, Request-Verarbeitung und Statuscodes.
+- `internal/validation`: zentrale Validierung für Create-Requests.
+- `extras/compose`: lokale Compose-Dateien für PostgreSQL und optional
+  Keycloak.
+- `extras/bruno`: Bruno-Collection für manuelle API-Tests.
 
 ## Entity-Idee
 
@@ -28,11 +33,11 @@ PostgreSQL.
   Zeitstempeln.
 - `Betreiber` beschreibt die Person, die genau einem Kiosk als Betreiber
   zugeordnet wird.
-- `Produkt` beschreibt ein Produkt mit Preis und Waehrung.
+- `Produkt` beschreibt ein Produkt mit Preis und Währung.
 - Ein Kiosk hat genau einen Betreiber und mehrere Produkte.
 - Die fachliche Richtung geht nur vom Kiosk zum Betreiber und zu den Produkten.
-- Betreiber und Produkt enthalten kein Kiosk-Objekt als Rueckrichtung.
-- Beim Loeschen eines Kiosks sollen die zugehoerigen Produkte ebenfalls
+- Betreiber und Produkt enthalten kein Kiosk-Objekt als Rückrichtung.
+- Beim Löschen eines Kiosks sollen die zugehörigen Produkte ebenfalls
   entfernt werden.
 
 ## REST-Fluss
@@ -48,7 +53,7 @@ PostgreSQL.
 
 ## Fehlerbehandlung
 
-- Ungueltiges JSON oder ungueltige Create-Daten: `400 Bad Request`.
+- Ungültiges JSON oder ungültige Create-Daten: `400 Bad Request`.
 - Nicht vorhandene ID beim Lesen: `404 Not Found`.
 - Bereits vorhandene E-Mail beim Neuanlegen: `409 Conflict`.
 - Erfolgreiches Lesen: `200 OK`.
@@ -60,7 +65,7 @@ PostgreSQL.
 - GORM bildet die Go-Structs auf Tabellen ab.
 - `kiosk.betreiber_id` bildet die 1:1-Beziehung vom Kiosk zum Betreiber ab.
 - `produkt.kiosk_id` bildet die 1:N-Beziehung vom Kiosk zu Produkten ab.
-- Lesen benoetigt keine explizite Transaktion.
-- Neuanlegen wird in einer Transaktion ausgefuehrt, damit Kiosk, Betreiber und
+- Lesen benötigt keine explizite Transaktion.
+- Neuanlegen wird in einer Transaktion ausgeführt, damit Kiosk, Betreiber und
   Produkte gemeinsam gespeichert werden.
-- Die E-Mail des Kiosks ist eindeutig und wird vor dem Speichern geprueft.
+- Die E-Mail des Kiosks ist eindeutig und wird vor dem Speichern geprüft.

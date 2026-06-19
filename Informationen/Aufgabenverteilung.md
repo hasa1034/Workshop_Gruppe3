@@ -1,59 +1,42 @@
 # Aufgabenverteilung
 
+Diese Datei dokumentiert die interne Aufteilung der Arbeit. Die finale
+Abgabezusammenfassung steht in der Root-README `ReadMe.md`.
+
 ## Sam Haghighi
 
-- Entity-Modell fuer `Kiosk`, `Betreiber` und `Produkt` pflegen.
-- Go-Structs und GORM-Mapping fuer die Beziehungen definieren.
-- Codebasis fuer Entitys unter `internal/model` anlegen und aktuell halten.
-- Informationsdokumentation und README aktuell halten.
-- Darauf achten, dass `Kiosk` genau einen `Betreiber` und mehrere `Produkte`
+- Entity-Modell für `Kiosk`, `Betreiber` und `Produkt` gepflegt.
+- Go-Structs und GORM-Mapping für die Beziehungen definiert.
+- Codebasis für Entitys unter `internal/model` angelegt und mit der
+  Referenzstruktur abgeglichen.
+- Dokumentation und Root-README aktualisiert.
+- Darauf geachtet, dass `Kiosk` genau einen `Betreiber` und mehrere `Produkte`
   referenziert.
+- OpenAI Codex lokal im Repository genutzt.
 
 ## Ali Arslan
 
-- REST-Router und Handler fuer Lesen und Neuanlegen umsetzen.
-- Request- und Response-DTOs fuer den Kiosk-Flow definieren.
-- Validierung beim Neuanlegen mit `validator` anbinden.
-- Fehlerfaelle in passende HTTP-Statuscodes uebersetzen.
+- REST-Router und Handler für Lesen und Neuanlegen umgesetzt.
+- Request-DTOs für den Kiosk-Create-Flow definiert.
+- Validierung beim Neuanlegen mit `validator` angebunden.
+- Fehlerfälle in passende HTTP-Statuscodes übersetzt.
+- Handler an Service-Signaturen mit `context.Context` und
+  `repository.KioskFilter` angepasst.
 
 ## Efe Yueksel
 
-- PostgreSQL-Anbindung und GORM-Konfiguration umsetzen.
-- Repository- und Service-Logik fuer Lesen und Neuanlegen bauen.
-- Transaktion fuer das gemeinsame Speichern von Kiosk, Betreiber und Produkten
-  absichern.
-- Integrationstests und CI-Checks betreuen.
+- PostgreSQL-Anbindung und GORM-Konfiguration umgesetzt.
+- Repository- und Service-Logik für Lesen und Neuanlegen gebaut.
+- Transaktion für das gemeinsame Speichern von Kiosk, Betreiber und Produkten
+  abgesichert.
+- Integrationstests gegen PostgreSQL erstellt.
+- PostgreSQL-Compose-Datei bereitgestellt.
 
-## Phase 2: Erledigte Aufgaben
+## Gemeinsamer Abschluss
 
-### Sam Haghighi
-
-- `go.mod` um `gorm.io/gorm` und `gorm.io/driver/postgres` ergaenzen.
-- `debug.log` entfernen und `.gitignore` anlegen.
-- Danach pruefen:
-  - `go mod tidy`
-  - `go test ./...`
-  - `git status --short`
-
-### Ali Arslan
-
-- Handler an Efe-Service anpassen.
-- Handler-Interface mit `context.Context` und `repository.KioskFilter`
-  kompatibel machen.
-- Create-Request in `model.Kiosk` umwandeln.
-- Eigene Handler-Fehler entfernen und `service.ErrNotFound` sowie
-  `service.ErrEmailExists` verwenden.
-
-### Efe Yueksel
-
-- PostgreSQL-Compose-Datei fuellen.
-- `cmd/server/main.go` erstellen.
-- Config, DB, Migration, Repository, Service, Handler und Router verdrahten.
-- Integrationstest mit echter DB pruefen.
-
-### Gemeinsamer Abschluss
-
-- `gofmt`
-- `go mod tidy`
-- `go test ./...`
-- README aktualisieren, falls Ports oder Befehle abweichen.
+- Projektstruktur angelegt und bereinigt.
+- `go.mod` mit den benötigten Bibliotheken gepflegt.
+- PostgreSQL- und Keycloak-Compose-Dateien unter `extras/compose` abgelegt.
+- Bruno-Collection für manuelle REST-Tests unter `extras/bruno/Kiosk-Go`
+  ergänzt.
+- Root-README mit dem tatsächlichen Code-Stand synchronisiert.

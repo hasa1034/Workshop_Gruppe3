@@ -2,14 +2,15 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
-	"fmt"
+
 	"github.com/hasa1034/Workshop_Gruppe3/internal/app"
 )
 
 func main() {
-		banner := `
+	banner := `
  _  __ _           _
 | |/ /(_) ___  ___| | __
 | ' / | |/ _ \/ __| |/ /
@@ -17,7 +18,7 @@ func main() {
 |_|\_\|_|\___/|___/_|\_\
    Kiosk-Server · Go + GORM
 `
-	fmt.Println(banner)
+	fmt.Print(banner)
 	if err := app.Run(); err != nil {
 		slog.Error("server beendet mit fehler", "err", err)
 		os.Exit(1)

@@ -1,56 +1,60 @@
-# Vorgehensweise fuer Go
+# Vorgehensweise für Go
 
-## Schritt 1: Projektstruktur anlegen
+## Schritt 1: Projektstruktur
 
-- Go-Modul initialisieren.
-- Ordner fuer Startpunkt, Modelle, Repository, Service, HTTP-Handler,
-  Validierung und Tests anlegen.
-- Konfiguration fuer Server-Port und PostgreSQL-Verbindung vorbereiten.
+- Go-Modul ist initialisiert.
+- Ordner für Startpunkt, Modelle, Repository, Service, HTTP-Handler,
+  Validierung und Tests sind angelegt.
+- Konfiguration für Server-Port und PostgreSQL-Verbindung liegt unter
+  `internal/config`.
 
-## Schritt 2: Modelle erstellen
+## Schritt 2: Modelle
 
-- `Kiosk`, `Betreiber`, `Produkt` und `Geschlecht` als Go-Typen definieren.
-- GORM-Tags fuer Tabellen, Spalten, Indizes und Beziehungen setzen.
-- Beziehung von `Kiosk` zu `Betreiber` als einzelnes Struct abbilden.
-- Beziehung von `Kiosk` zu `Produkt` als Slice abbilden.
-- Keine Go-Ruecknavigation von `Betreiber` oder `Produkt` zu `Kiosk`
-  modellieren.
+- `Kiosk`, `Betreiber`, `Produkt` und `Geschlecht` sind als Go-Typen
+  definiert.
+- GORM-Tags für Tabellen, Spalten, Indizes und Beziehungen sind gesetzt.
+- Beziehung von `Kiosk` zu `Betreiber` ist als einzelnes Struct abgebildet.
+- Beziehung von `Kiosk` zu `Produkt` ist als Slice abgebildet.
+- `Betreiber` und `Produkt` besitzen keine fachliche Go-Rücknavigation zu
+  `Kiosk`.
 
-## Schritt 3: Datenbank anbinden
+## Schritt 3: Datenbank
 
-- PostgreSQL-Treiber fuer GORM konfigurieren.
-- Verbindung beim Start der Anwendung oeffnen.
-- `kiosk.betreiber_id` fuer die 1:1-Beziehung und `produkt.kiosk_id` fuer die
-  1:N-Beziehung vorsehen.
-- Tabellenstruktur entweder per vorhandener SQL-Datei oder per kontrollierter
-  Migration bereitstellen.
+- PostgreSQL-Treiber für GORM ist konfiguriert.
+- Verbindung wird beim Start der Anwendung geöffnet.
+- `kiosk.betreiber_id` bildet die 1:1-Beziehung ab.
+- `produkt.kiosk_id` bildet die 1:N-Beziehung ab.
+- Schema `kiosk`, Enum `kiosk.geschlecht` und Tabellen werden per Migration
+  bereitgestellt.
 
-## Schritt 4: REST-Router und Handler bauen
+## Schritt 4: REST-Router und Handler
 
-- Router mit `net/http` und optional `github.com/go-chi/chi/v5` aufbauen.
-- Handler fuer `GET /kioske/{id}`, `GET /kioske` und `POST /kioske` erstellen.
-- JSON sauber lesen und schreiben.
-- `Location`-Header beim Neuanlegen setzen.
+- Router ist mit `net/http` und `github.com/go-chi/chi/v5` umgesetzt.
+- Handler für `GET /kioske/{id}`, `GET /kioske` und `POST /kioske` sind
+  vorhanden.
+- JSON wird gelesen und geschrieben.
+- `Location`-Header wird beim Neuanlegen gesetzt.
 
-## Schritt 5: Validierung beim Neuanlegen
+## Schritt 5: Validierung
 
-- Create-DTOs fuer Kiosk, Betreiber und Produkt definieren.
+- Create-DTOs für Kiosk, Betreiber und Produkt sind definiert.
 - Im Create-DTO ist `betreiber` ein einzelnes Objekt und `produkte` ein Array.
-- `github.com/go-playground/validator/v10` fuer Pflichtfelder, E-Mail,
-  Laengen und Waehrung verwenden.
-- Validierung nur im POST-Flow ausfuehren.
+- `github.com/go-playground/validator/v10` prüft Pflichtfelder, E-Mail,
+  Längen, Geschlecht, URL und Währung.
+- Validierung wird nur im POST-Flow ausgeführt.
 
-## Schritt 6: Service- und Repository-Logik
+## Schritt 6: Service und Repository
 
 - Repository kapselt alle GORM-Zugriffe.
-- Service prueft fachliche Regeln wie eindeutige E-Mail.
-- Service startet die Transaktion fuer das Neuanlegen.
+- Service prüft fachliche Regeln wie eindeutige E-Mail.
+- Service startet die Transaktion für das Neuanlegen.
 - Handler wandeln Service-Fehler in HTTP-Statuscodes um.
 
 ## Schritt 7: Integrationstest
 
-- Testserver mit `net/http/httptest` starten.
-- Testdatenbank vorbereiten.
-- Erfolgreiches `POST /kioske` pruefen.
-- Danach `GET /kioske/{id}` fuer den neu angelegten Datensatz pruefen.
-- Ungueltigen Create-Request pruefen und `400 Bad Request` erwarten.
+- Testdatenbank wird über PostgreSQL vorbereitet.
+- Tests laufen gegen Service und Repository.
+- Erfolgreiches Anlegen eines Kiosks wird geprüft.
+- Lesen per ID für den neu angelegten Datensatz wird geprüft.
+- Doppelte E-Mail-Adressen, nicht vorhandene IDs und Listenfilter werden
+  geprüft.

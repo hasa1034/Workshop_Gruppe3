@@ -61,7 +61,13 @@ Der Server wird aus dem Projektwurzelverzeichnis gestartet:
 go run .
 ```
 
-Standard-Port ist `8081`. Die Tests laufen mit:
+Standard-Port ist `8081`. Der Standardtest fuer die Abgabe laeuft mit:
+
+```powershell
+go test .
+```
+
+Der vollstaendige Paketcheck laeuft mit:
 
 ```powershell
 go test ./...

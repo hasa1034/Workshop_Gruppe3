@@ -24,7 +24,7 @@
   absichern.
 - Integrationstests und CI-Checks betreuen.
 
-## Phase 2: Offene Aufgaben
+## Phase 2: Erledigte Aufgaben
 
 ### Sam Haghighi
 

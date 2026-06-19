@@ -1,32 +1,31 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	govalidator "github.com/go-playground/validator/v10"
 	"github.com/hasa1034/Workshop_Gruppe3/internal/model"
+	"github.com/hasa1034/Workshop_Gruppe3/internal/repository"
+	"github.com/hasa1034/Workshop_Gruppe3/internal/service"
 	"github.com/hasa1034/Workshop_Gruppe3/internal/validation"
+	"github.com/shopspring/decimal"
 )
 
 // KioskService definiert die Methoden, die der Handler vom Service benoetigt.
-// Person 3 (Efe) implementiert dieses Interface im Service-Package.
+// Entspricht der tatsaechlichen Signatur von service.KioskService (Efe).
 type KioskService interface {
-	GetByID(id uint) (*model.Kiosk, error)
-	GetAll(name, email string) ([]model.Kiosk, error)
-	Create(req *validation.KioskCreateRequest) (*model.Kiosk, error)
+	GetByID(ctx context.Context, id uint) (*model.Kiosk, error)
+	List(ctx context.Context, filter repository.KioskFilter) ([]model.Kiosk, error)
+	Create(ctx context.Context, kiosk *model.Kiosk) error
 }
-
-// Sentinel-Fehler – werden vom Service zurueckgegeben.
-var (
-	ErrNotFound      = errors.New("kiosk nicht gefunden")
-	ErrEmailConflict = errors.New("e-mail bereits vergeben")
-)
 
 // KioskHandler haelt den Service und beantwortet HTTP-Anfragen.
 type KioskHandler struct {
@@ -38,11 +37,14 @@ func NewKioskHandler(svc KioskService) *KioskHandler {
 }
 
 // GET /kioske
+// Optionale Query-Parameter: ?name=... und ?email=...
 func (h *KioskHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	name := r.URL.Query().Get("name")
-	email := r.URL.Query().Get("email")
+	filter := repository.KioskFilter{
+		Name:  r.URL.Query().Get("name"),
+		Email: r.URL.Query().Get("email"),
+	}
 
-	kioske, err := h.svc.GetAll(name, email)
+	kioske, err := h.svc.List(r.Context(), filter)
 	if err != nil {
 		slog.Error("GetAll fehlgeschlagen", "err", err)
 		writeError(w, http.StatusInternalServerError, "interner Fehler")
@@ -61,8 +63,8 @@ func (h *KioskHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	kiosk, err := h.svc.GetByID(uint(id))
-	if errors.Is(err, ErrNotFound) {
+	kiosk, err := h.svc.GetByID(r.Context(), uint(id))
+	if errors.Is(err, service.ErrNotFound) {
 		writeError(w, http.StatusNotFound, "Kiosk nicht gefunden")
 		return
 	}
@@ -77,12 +79,14 @@ func (h *KioskHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 
 // POST /kioske
 func (h *KioskHandler) Create(w http.ResponseWriter, r *http.Request) {
+	// 1. JSON einlesen
 	var req validation.KioskCreateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, "ungueltiges JSON: "+err.Error())
 		return
 	}
 
+	// 2. Validierung
 	if err := validation.ValidateKioskCreate(&req); err != nil {
 		var ve govalidator.ValidationErrors
 		if errors.As(err, &ve) {
@@ -97,19 +101,64 @@ func (h *KioskHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	kiosk, err := h.svc.Create(&req)
-	if errors.Is(err, ErrEmailConflict) {
-		writeError(w, http.StatusConflict, "E-Mail bereits vergeben")
+	// 3. DTO → model.Kiosk mappen
+	kiosk, err := mapToModel(&req)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err != nil {
+
+	// 4. Service aufrufen
+	if err := h.svc.Create(r.Context(), kiosk); err != nil {
+		if errors.Is(err, service.ErrEmailExists) {
+			writeError(w, http.StatusConflict, "E-Mail bereits vergeben")
+			return
+		}
 		slog.Error("Create fehlgeschlagen", "err", err)
 		writeError(w, http.StatusInternalServerError, "interner Fehler")
 		return
 	}
 
+	// 5. 201 + Location-Header
 	w.Header().Set("Location", fmt.Sprintf("/kioske/%d", kiosk.ID))
 	writeJSON(w, http.StatusCreated, kiosk)
+}
+
+// mapToModel wandelt das Create-DTO in ein model.Kiosk um.
+func mapToModel(req *validation.KioskCreateRequest) (*model.Kiosk, error) {
+	istGeoeffnet := true
+	if req.IstGeoeffnet != nil {
+		istGeoeffnet = *req.IstGeoeffnet
+	}
+
+	kiosk := &model.Kiosk{
+		Name:         req.Name,
+		Email:        req.Email,
+		IstGeoeffnet: istGeoeffnet,
+		Homepage:     req.Homepage,
+		Username:     req.Username,
+		Erzeugt:      time.Now(),
+		Aktualisiert: time.Now(),
+		Betreiber: model.Betreiber{
+			Vorname:    req.Betreiber.Vorname,
+			Nachname:   req.Betreiber.Nachname,
+			Geschlecht: req.Betreiber.Geschlecht,
+		},
+	}
+
+	for _, p := range req.Produkte {
+		preis, err := decimal.NewFromString(p.Preis)
+		if err != nil {
+			return nil, fmt.Errorf("ungültiger Preis '%s': %w", p.Preis, err)
+		}
+		kiosk.Produkte = append(kiosk.Produkte, model.Produkt{
+			Name:     p.Name,
+			Preis:    preis,
+			Waehrung: p.Waehrung,
+		})
+	}
+
+	return kiosk, nil
 }
 
 // --- Hilfsfunktionen ---

@@ -1,0 +1,40 @@
+# Lokale PostgreSQL-Datenbank fuer den Kiosk-Server.
+#
+# Aufruf:
+#   docker compose -f extras/compose/postgres/compose.yml up -d
+#   docker compose -f extras/compose/postgres/compose.yml down       # Daten behalten
+#   docker compose -f extras/compose/postgres/compose.yml down -v     # Daten loeschen
+#
+# Die Zugangsdaten entsprechen den Standardwerten aus internal/config/config.go,
+# sodass Server und Integrationstest ohne weitere Umgebungsvariablen laufen:
+#   PGHOST=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres
+#   PGDATABASE=kiosk PGSSLMODE=disable
+#
+# https://github.com/compose-spec/compose-spec/blob/master/schema/compose-spec.json
+
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: kiosk-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: kiosk
+      TZ: Europe/Berlin
+    ports:
+      - "5432:5432"
+    volumes:
+      # PostgreSQL 18 legt die Daten in einem versionsspezifischen Unterordner ab,
+      # daher das Volume auf /var/lib/postgresql mounten (nicht .../data).
+      - kiosk_pg_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kiosk"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+volumes:
+  kiosk_pg_data:
+    name: kiosk_pg_data

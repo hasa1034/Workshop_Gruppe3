@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 	"time"
@@ -13,7 +14,17 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+const banner = `
+ _  __ _           _      ___              _
+| |/ /(_) ___  ___| | __ / __| ___ ___  __| |
+| ' / | |/ _ \/ __| |/ / \__ \/ -_) -_)/ _' |
+|_|\_\|_|\___/|___/_|\_\ |___/\___\___|\__,_|
+   Testdaten werden eingespielt · Go + GORM
+`
+
 func main() {
+	fmt.Println(banner)
+
 	cfg := config.Load()
 
 	db, err := repository.Connect(cfg.DatabaseURL)
@@ -21,11 +32,13 @@ func main() {
 		slog.Error("Datenbankverbindung fehlgeschlagen", "err", err)
 		os.Exit(1)
 	}
+	slog.Info("Datenbankverbindung hergestellt")
 
 	if err := repository.Migrate(db); err != nil {
 		slog.Error("Migration fehlgeschlagen", "err", err)
 		os.Exit(1)
 	}
+	slog.Info("Schema migriert")
 
 	maennlich := model.Geschlecht("MAENNLICH")
 	weiblich := model.Geschlecht("WEIBLICH")
@@ -89,13 +102,17 @@ func main() {
 		},
 	}
 
+	var angelegt, uebersprungen int
 	for _, k := range kioske {
 		if err := db.Create(&k).Error; err != nil {
 			slog.Warn("Kiosk übersprungen (existiert bereits?)", "email", k.Email, "err", err)
+			uebersprungen++
 			continue
 		}
-		slog.Info("Kiosk angelegt", "name", k.Name, "id", k.ID)
+		slog.Info("Kiosk angelegt", "name", k.Name, "id", k.ID, "produkte", len(k.Produkte))
+		angelegt++
 	}
 
-	slog.Info("Seed abgeschlossen")
+	fmt.Println()
+	slog.Info("Seed abgeschlossen", "angelegt", angelegt, "uebersprungen", uebersprungen)
 }

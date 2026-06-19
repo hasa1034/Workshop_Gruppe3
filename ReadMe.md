@@ -19,7 +19,7 @@ Keine separate Chat-URL; die Arbeit erfolgte lokal mit OpenAI Codex im Repositor
 
 ### REST-Schnittstelle (Lesen und Neuanlegen)
 Go mit `net/http` und optional `github.com/go-chi/chi/v5` als schlankem Router.
-Geplant sind Endpunkte zum Lesen von Kiosken und zum Neuanlegen eines Kiosks
+Umgesetzt sind Endpunkte zum Lesen von Kiosken und zum Neuanlegen eines Kiosks
 inklusive genau einem Betreiber und mehreren Produkten.
 
 ### Validierung (nur Neuanlegen)
@@ -43,11 +43,29 @@ Neuanlegen und GET zum Lesen.
 
 ## Aufgabenverteilung
 Sam Haghighi: Entity-Modell, Go-Structs, GORM-Mapping und Dokumentation.
-Sams Entity-Codebasis wurde mit `go.mod` und `internal/model` begonnen.
 Ali Arslan: REST-Router, Handler, Request-/Response-DTOs und Validierung beim
 Neuanlegen.
 Efe Yueksel: PostgreSQL-Anbindung, Repository-/Service-Logik,
 Integrationstests und CI-Checks.
+
+## Start und Tests
+PostgreSQL wird mit Docker Compose gestartet:
+
+```powershell
+docker compose -f extras/compose/postgres/compose.yml up -d
+```
+
+Der Server wird aus dem Projektwurzelverzeichnis gestartet:
+
+```powershell
+go run .
+```
+
+Standard-Port ist `8081`. Die Tests laufen mit:
+
+```powershell
+go test ./...
+```
 
 ## Prompts/Requests an KI-Agent/en
 - Relevante Kiosk-Referenzdokumente auswerten und als Go-Dokumentation in

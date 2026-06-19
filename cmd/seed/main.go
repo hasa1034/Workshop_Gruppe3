@@ -78,7 +78,7 @@ func main() {
 			Erzeugt:      time.Now(),
 			Aktualisiert: time.Now(),
 			Betreiber: model.Betreiber{
-				Vorname: "Felix",
+				Vorname:  "Felix",
 				Nachname: "Weber",
 			},
 			Produkte: []model.Produkt{

@@ -19,7 +19,7 @@ type Config struct {
 // andernfalls wird er aus den einzelnen PG*-Variablen zusammengesetzt.
 func Load() Config {
 	return Config{
-		ServerPort:  getEnv("SERVER_PORT", "8080"),
+		ServerPort:  getEnv("SERVER_PORT", "8081"),
 		DatabaseURL: databaseURL(),
 	}
 }

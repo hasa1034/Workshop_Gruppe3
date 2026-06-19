@@ -1,4 +1,3 @@
-// Command server startet den Kiosk-HTTP-Server.
 package main
 
 import (

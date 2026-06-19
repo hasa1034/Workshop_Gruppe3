@@ -3,9 +3,9 @@ package http
 import (
 	"net/http"
 
-	"github.com/hasa1034/Workshop_Gruppe3/internal/handler"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/hasa1034/Workshop_Gruppe3/internal/handler"
 )
 
 // NewRouter baut den chi-Router mit allen Kiosk-Endpunkten.

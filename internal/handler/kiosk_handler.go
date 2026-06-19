@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/hasa1034/Workshop_Gruppe3/internal/model"
-	"github.com/hasa1034/Workshop_Gruppe3/internal/validation"
 	"github.com/go-chi/chi/v5"
 	govalidator "github.com/go-playground/validator/v10"
+	"github.com/hasa1034/Workshop_Gruppe3/internal/model"
+	"github.com/hasa1034/Workshop_Gruppe3/internal/validation"
 )
 
 // KioskService definiert die Methoden, die der Handler vom Service benoetigt.

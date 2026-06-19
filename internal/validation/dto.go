@@ -1,17 +1,17 @@
 package validation
 
 import (
-	"github.com/hasa1034/Workshop_Gruppe3/internal/model"
 	"github.com/go-playground/validator/v10"
+	"github.com/hasa1034/Workshop_Gruppe3/internal/model"
 )
 
 var validate = validator.New()
 
 // BetreiberCreateRequest – Eingabe fuer einen neuen Betreiber.
 type BetreiberCreateRequest struct {
-	Vorname    string              `json:"vorname"              validate:"required,max=40"`
-	Nachname   string              `json:"nachname"             validate:"required,max=40"`
-	Geschlecht *model.Geschlecht   `json:"geschlecht,omitempty" validate:"omitempty,oneof=MAENNLICH WEIBLICH DIVERS"`
+	Vorname    string            `json:"vorname"              validate:"required,max=40"`
+	Nachname   string            `json:"nachname"             validate:"required,max=40"`
+	Geschlecht *model.Geschlecht `json:"geschlecht,omitempty" validate:"omitempty,oneof=MAENNLICH WEIBLICH DIVERS"`
 }
 
 // ProduktCreateRequest – Eingabe fuer ein neues Produkt.

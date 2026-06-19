@@ -1,0 +1,5 @@
+debug.log
+*.log
+.vscode/
+bin/
+tmp/
